@@ -278,6 +278,11 @@ static mlir::cir::ConstArrayAttr getConstArray(mlir::Attribute attrs,
   return mlir::cir::ConstArrayAttr::get(arrayTy, attrs);
 }
 
+void ConstantAggregateBuilderBase::addPointer(mlir::cir::PointerType ptrTy,
+                                              uint64_t value) {
+  add(Builder.CGM.getBuilder().getConstPtrAttr(ptrTy, value));
+}
+
 mlir::Attribute ConstantAggregateBuilderBase::finishArray(mlir::Type eltTy) {
   markFinished();
 

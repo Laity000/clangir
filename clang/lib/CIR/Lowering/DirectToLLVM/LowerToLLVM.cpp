@@ -46,6 +46,7 @@
 #include "mlir/Target/LLVMIR/Dialect/OpenMP/OpenMPToLLVMIRTranslation.h"
 #include "mlir/Target/LLVMIR/Export.h"
 #include "mlir/Transforms/DialectConversion.h"
+#include "clang/CIR/Dialect/Builder/CIRBaseBuilder.h"
 #include "clang/CIR/Dialect/IR/CIRAttrs.h"
 #include "clang/CIR/Dialect/IR/CIRDialect.h"
 #include "clang/CIR/Dialect/IR/CIROpsEnums.h"
@@ -189,7 +190,7 @@ lowerCirAttrAsValue(mlir::Operation *parentOp, mlir::cir::ConstPtrAttr ptrAttr,
         loc, converter->convertType(ptrAttr.getType()));
   }
   mlir::Value ptrVal = rewriter.create<mlir::LLVM::ConstantOp>(
-      loc, rewriter.getI64Type(), ptrAttr.getValue());
+      loc, ptrAttr.getValue().getType(), ptrAttr.getValue().getInt());
   return rewriter.create<mlir::LLVM::IntToPtrOp>(
       loc, converter->convertType(ptrAttr.getType()), ptrVal);
 }
@@ -736,10 +737,8 @@ public:
       return mlir::success();
     }
     case mlir::cir::CastKind::ptr_to_bool: {
-      auto null = rewriter.create<mlir::cir::ConstantOp>(
-          src.getLoc(), castOp.getSrc().getType(),
-          mlir::cir::ConstPtrAttr::get(getContext(), castOp.getSrc().getType(),
-                                       0));
+      CIRBaseBuilderTy builder(*getContext());
+      auto null = builder.getNullPtr(castOp.getSrc().getType(), src.getLoc());
       rewriter.replaceOpWithNewOp<mlir::cir::CmpOp>(
           castOp, mlir::cir::BoolType::get(getContext()),
           mlir::cir::CmpOpKind::ne, castOp.getSrc(), null);

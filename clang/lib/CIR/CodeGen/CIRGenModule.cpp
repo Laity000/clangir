@@ -139,7 +139,7 @@ CIRGenModule::CIRGenModule(mlir::MLIRContext &context,
   // TODO(cir): perhaps we should abstract long double variations into a custom
   // cir.long_double type. Said type would also hold the semantics for lowering.
 
-  // TODO: PointerWidthInBits
+  PointerWidthInBits = astctx.getTargetInfo().getPointerWidth(LangAS::Default);
   PointerAlignInBytes =
       astctx
           .toCharUnitsFromBits(

@@ -208,7 +208,6 @@ public:
   //===--------------------------------------------------------------------===//
   // Cast/Conversion Operators
   //===--------------------------------------------------------------------===//
-
   mlir::Value createCast(mlir::Location loc, mlir::cir::CastKind kind,
                          mlir::Value src, mlir::Type newTy) {
     if (newTy == src.getType())
@@ -327,14 +326,17 @@ public:
     return create<mlir::cir::ForOp>(loc, condBuilder, bodyBuilder, stepBuilder);
   }
 
-  mlir::TypedAttr getConstPtrAttr(mlir::Type t, uint64_t v) {
+  mlir::TypedAttr getConstPtrAttrWithWidth(mlir::Type t, uint64_t v,
+                                           uint64_t w) {
     assert(t.isa<mlir::cir::PointerType>() && "expected cir.ptr");
-    return mlir::cir::ConstPtrAttr::get(getContext(), t, v);
+    auto val =
+        mlir::IntegerAttr::get(mlir::IntegerType::get(t.getContext(), w), v);
+    return mlir::cir::ConstPtrAttr::get(getContext(), t, val);
   }
 
   // Creates constant nullptr for pointer type ty.
   mlir::cir::ConstantOp getNullPtr(mlir::Type ty, mlir::Location loc) {
-    return create<mlir::cir::ConstantOp>(loc, ty, getConstPtrAttr(ty, 0));
+    return create<mlir::cir::ConstantOp>(loc, ty, getConstPtrAttrWithWidth(ty, 0, 64));
   }
 
   /// Create a loop condition.

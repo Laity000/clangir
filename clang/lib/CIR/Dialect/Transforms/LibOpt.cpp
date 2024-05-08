@@ -24,6 +24,8 @@
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/Path.h"
 
+#include "clang/Basic/TargetInfo.h"
+
 #include "StdHelpers.h"
 
 using cir::CIRBaseBuilderTy;
@@ -203,8 +205,7 @@ void LibOptPass::xformStdFindIntoMemchr(StdFindOp findOp) {
   //   return result;
   // else
   // return last;
-  auto NullPtr = builder.create<ConstantOp>(
-      findOp.getLoc(), first.getType(), ConstPtrAttr::get(first.getType(), 0));
+  auto NullPtr = builder.getNullPtr(first.getType(), findOp.getLoc());
   auto CmpResult = builder.create<CmpOp>(
       findOp.getLoc(), BoolType::get(builder.getContext()), CmpOpKind::eq,
       NullPtr.getRes(), MemChrResult);

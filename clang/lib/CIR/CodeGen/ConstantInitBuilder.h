@@ -196,9 +196,7 @@ public:
   }
 
   /// Add a pointer of a specific type.
-  void addPointer(mlir::cir::PointerType ptrTy, uint64_t value) {
-    add(mlir::cir::ConstPtrAttr::get(ptrTy.getContext(), ptrTy, value));
-  }
+  void addPointer(mlir::cir::PointerType ptrTy, uint64_t value);
 
   /// Add a bitcast of a value to a specific type.
   void addBitCast(mlir::Attribute value, mlir::Type type) {

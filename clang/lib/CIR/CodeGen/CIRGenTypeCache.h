@@ -95,7 +95,7 @@ struct CIRGenTypeCache {
   //   }
 
   /// The width of a pointer into the generic address space.
-  //   unsigned char PointerWidthInBits;
+  unsigned char PointerWidthInBits;
 
   /// The size and alignment of a pointer into the generic address space.
   union {

@@ -213,7 +213,7 @@ void LangAttr::print(AsmPrinter &printer) const {
 //===----------------------------------------------------------------------===//
 
 Attribute ConstPtrAttr::parse(AsmParser &parser, Type odsType) {
-  uint64_t value;
+  mlir::IntegerAttr value;
 
   if (!odsType.isa<cir::PointerType>())
     return {};
@@ -223,9 +223,10 @@ Attribute ConstPtrAttr::parse(AsmParser &parser, Type odsType) {
     return {};
 
   if (parser.parseOptionalKeyword("null").succeeded()) {
-    value = 0;
+    value = mlir::IntegerAttr::get(
+        mlir::IntegerType::get(odsType.getContext(), 64), 0);
   } else {
-    if (parser.parseInteger(value))
+    if (parser.parseAttribute(value))
       parser.emitError(parser.getCurrentLocation(), "expected integer value");
   }
 
